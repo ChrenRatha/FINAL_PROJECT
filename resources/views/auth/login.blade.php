@@ -234,6 +234,26 @@
             box-shadow: 0 8px 25px rgba(192, 132, 252, 0.4);
         }
 
+        /* Register Link */
+        .register-link {
+            text-align: center;
+            margin-top: 22px;
+            color: #ffffff;
+            font-size: 13px;
+        }
+
+        .register-link a {
+            color: #e9d5ff;
+            font-weight: 700;
+            text-decoration: none;
+            margin-left: 4px;
+        }
+
+        .register-link a:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+
         /* Footer */
         .login-footer {
             color: rgba(255, 255, 255, 0.9);
@@ -386,6 +406,17 @@
                         LOG IN
                     </button>
                 </form>
+
+                <!-- Register as Student -->
+                @if (Route::has('register'))
+                    <div class="register-link">
+                        Don't have an account?
+                        <a href="{{ route('register') }}">
+                            Register as Student
+                        </a>
+                    </div>
+                @endif
+
             </div>
 
             <!-- Footer -->

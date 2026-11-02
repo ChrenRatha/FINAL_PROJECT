@@ -1,4 +1,3 @@
-
 <nav x-data="{ open: false }" class="admin-sidebar">
 
     <style>
@@ -104,15 +103,26 @@
         }
 
         .sidebar-avatar {
-            width: 38px;
-            height: 38px;
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
             border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid #e0e7ff;
             background: linear-gradient(135deg, #2563eb, #7c3aed);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 700;
+            font-size: 16px;
+        }
+
+        .sidebar-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         .sidebar-mobile-toggle {
@@ -189,7 +199,8 @@
     >
 
         <!-- Logo -->
-        <a href="{{ route('dashboard') }}" class="sidebar-logo">
+        <a href="{{ Auth::user()->role === 'admin' ? route('dashboard') : route('student.dashboard') }}"
+           class="sidebar-logo">
             <span>🎓</span>
             Student MIS
         </a>
@@ -197,48 +208,70 @@
         <!-- Navigation -->
         <div class="sidebar-menu">
 
-            <div class="sidebar-label">MAIN MENU</div>
+            @if (Auth::user()->role === 'admin')
 
-            <a href="{{ route('dashboard') }}"
-               class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <span class="sidebar-icon">▦</span>
-                Dashboard
-            </a>
+                <div class="sidebar-label">MAIN MENU</div>
 
-            <div class="sidebar-label">STUDENT MANAGEMENT</div>
+                <a href="{{ route('dashboard') }}"
+                   class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <span class="sidebar-icon">▦</span>
+                    Dashboard
+                </a>
 
-            <a href="{{ route('student.list') }}"
-               class="sidebar-link {{ request()->routeIs('student.list') ? 'active' : '' }}">
-                <span class="sidebar-icon">👨‍🎓</span>
-                Student List
-            </a>
+                <div class="sidebar-label">STUDENT MANAGEMENT</div>
 
-            <a href="{{ route('student.create') }}"
-               class="sidebar-link {{ request()->routeIs('student.create') ? 'active' : '' }}">
-                <span class="sidebar-icon">➕</span>
-                Add Student
-            </a>
+                <a href="{{ route('student.list') }}"
+                   class="sidebar-link {{ request()->routeIs('student.list') ? 'active' : '' }}">
+                    <span class="sidebar-icon">👨‍🎓</span>
+                    Student List
+                </a>
 
-            <div class="sidebar-label">DEPARTMENT MANAGEMENT</div>
+                <a href="{{ route('student.create') }}"
+                   class="sidebar-link {{ request()->routeIs('student.create') ? 'active' : '' }}">
+                    <span class="sidebar-icon">➕</span>
+                    Add Student
+                </a>
 
-            <a href="{{ route('department.list') }}"
-               class="sidebar-link {{ request()->routeIs('department.list') ? 'active' : '' }}">
-                <span class="sidebar-icon">🏢</span>
-                Department List
-            </a>
+                <div class="sidebar-label">ATTENDANCE MANAGEMENT</div>
 
-            <a href="{{ route('department.create') }}"
-               class="sidebar-link {{ request()->routeIs('department.create') ? 'active' : '' }}">
-                <span class="sidebar-icon">➕</span>
-                Add Department
-            </a>
+                <a href="{{ route('attendance.index') }}"
+                   class="sidebar-link {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
+                    <span class="sidebar-icon">📋</span>
+                    Attendance
+                </a>
+
+                <div class="sidebar-label">DEPARTMENT MANAGEMENT</div>
+
+                <a href="{{ route('department.list') }}"
+                   class="sidebar-link {{ request()->routeIs('department.list') ? 'active' : '' }}">
+                    <span class="sidebar-icon">🏢</span>
+                    Department List
+                </a>
+
+                <a href="{{ route('department.create') }}"
+                   class="sidebar-link {{ request()->routeIs('department.create') ? 'active' : '' }}">
+                    <span class="sidebar-icon">➕</span>
+                    Add Department
+                </a>
+
+            @elseif (Auth::user()->role === 'student')
+
+                <div class="sidebar-label">STUDENT MENU</div>
+
+                <a href="{{ route('student.dashboard') }}"
+                   class="sidebar-link {{ request()->routeIs('student.dashboard') ? 'active' : '' }}">
+                    <span class="sidebar-icon">▦</span>
+                    My Dashboard
+                </a>
+
+            @endif
 
             <div class="sidebar-label">ACCOUNT</div>
 
             <a href="{{ route('profile.edit') }}"
                class="sidebar-link {{ request()->routeIs('profile.*') ? 'active' : '' }}">
                 <span class="sidebar-icon">⚙️</span>
-                Settings
+                My Profile
             </a>
 
         </div>
@@ -248,8 +281,23 @@
 
             <div class="sidebar-user">
 
+                <!-- Admin: Real Profile Picture / Student: First Letter -->
                 <div class="sidebar-avatar">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+
+                    @if (Auth::user()->role === 'admin')
+
+                        <img
+                            src="{{ asset('images/profile/chren-ratha.jpg') }}"
+                            alt="Admin Profile"
+                            onerror="this.style.display='none'; this.parentElement.innerText='{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}';"
+                        >
+
+                    @else
+
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+
+                    @endif
+
                 </div>
 
                 <div style="flex:1; min-width:0;">
@@ -258,7 +306,7 @@
                     </div>
 
                     <div style="font-size:11px;color:#94a3b8;">
-                        Administrator
+                        {{ ucfirst(Auth::user()->role) }}
                     </div>
                 </div>
 
@@ -286,3 +334,4 @@
     </aside>
 
 </nav>
+```

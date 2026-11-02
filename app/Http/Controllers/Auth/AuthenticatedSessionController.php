@@ -28,7 +28,22 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+
+        if ($user->role === 'admin') {
+            return redirect()->route('dashboard');
+        }
+
+        if ($user->role === 'student') {
+            return redirect()->route('student.dashboard');
+        }
+
+        Auth::logout();
+
+        return redirect()->route('login')
+            ->withErrors([
+                'email' => 'Your account role is not authorized.',
+            ]);
     }
 
     /**
